@@ -1,0 +1,40 @@
+services:
+  db:
+    container_name: jasper-database
+    image: postgres:17-alpine3.20
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: jasper-app
+      POSTGRES_USER: asdf
+      POSTGRES_PASSWORD: asdf
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d:ro
+    shm_size: 1g
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U asdf -d jasper-app" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+#  app:
+#    build: .
+#    container_name: jasper-app
+#    restart: on-failure
+#    depends_on:
+#      - db
+#    environment:
+#      SPRING_DATASOURCE_URL: ${DATASOURCE_URL}
+#      SPRING_DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
+#      SPRING_DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+#      SPRING_FLYWAY_ENABLED: "true"
+#    ports:
+#      - "8080:8081"
+#
